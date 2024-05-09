@@ -7,7 +7,7 @@ require('dotenv').config();
 //Get the host of the db
 const DB_HOST = process.env.DB_HOST;
 
-console.info("Connecting to bd ProyectoDb... ⌛")
+console.info("Connecting to bd: ProyectoDb... ⌛")
 //Create the connection to the BD 
 const connection = 
     mongoose.connect(DB_HOST)
