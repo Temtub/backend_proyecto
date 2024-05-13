@@ -11,7 +11,11 @@ const users = new mongoose.Schema({
     password: String, //Password of the user
     icon: Buffer, //Icon of the user
     email: String, //Email of the user
-    friends: [String], //Array of friends
+    friends: [{
+        friendName: String,
+        friendImage: Buffer,
+        friendBio: String
+    }], //Array of friends
     birth_date: Date, //Date of the user
     location: Schema.Types.Mixed, //Localitation of the user,
     bio: String, //Bio of the user
