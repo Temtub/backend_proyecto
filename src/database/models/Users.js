@@ -1,29 +1,25 @@
-//Bring the connection of the BD. 
-// Import mongoose from the file 
-const { connection, mongoose } = require("../db")
+// Import mongoose and the database connection file
+const { mongoose } = require("../db");
 
-//Get all the types for mongoose
-const Schema = mongoose.Schema;
-
-//Create the schema for the users
-const users = new mongoose.Schema({
-    name: String, //Name of the user
-    password: String, //Password of the user
-    icon: Buffer, //Icon of the user
-    email: String, //Email of the user
+// Define the schema for users
+const userSchema = new mongoose.Schema({
+    name: String, // Name of the user
+    password: String, // Password of the user
+    iconURL: String, // URL of the user's icon
+    email: String, // Email of the user
     friends: [{
-        friendName: String,
-        friendImage: Buffer,
-        friendBio: String
-    }], //Array of friends
-    birth_date: Date, //Date of the user
-    location: Schema.Types.Mixed, //Localitation of the user,
-    bio: String, //Bio of the user
-    likes: [String] //The things that the user likes
+        name: String, // Friend's name
+        imageURL: String, // URL of the friend's image
+        bio: String // Friend's bio
+    }], // Array of friends
+    birth_date: Date, // User's birth date
+    location: mongoose.Schema.Types.Mixed, // User's location
+    bio: String, // User's bio
+    likes: [String] // The things that the user likes
 });
 
-//Compile the users in a Model
-const User = mongoose.model('User', users);
+// Compile the schema into a model
+const User = mongoose.model('User', userSchema);
 
-//Export the User
-module.exports = User
+// Export the user model
+module.exports = User;
