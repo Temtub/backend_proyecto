@@ -2,9 +2,11 @@
 //-----------------------
 const router = require("express").Router()// Create the router
 
-//----- ROUTES FOR THE USER -------
 const userRouter = require("./usersRoutes")// Call the client routes
+const chatRouter = require("./chatRoutes")// Call the client routes
+//----- ROUTES FOR THE USER -------
 router.use("/user", userRouter)// Generate the routes for 
+router.use("/chat", chatRouter)// Generate the routes for 
 
 // Export the router
 module.exports = router
