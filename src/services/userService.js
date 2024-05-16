@@ -25,6 +25,40 @@ const getOneUser = async (idUser) =>{
     return userFoundJson;
 }
 
+/**
+ * Function to create a new user
+ * @param {*} name 
+ * @param {*} password 
+ * @param {*} password 
+ * @param {*} iconURL 
+ * @param {*} email 
+ * @param {*} birth_date 
+ * @param {*} location 
+ * @param {*} bio 
+ * @returns 
+ */
+async function createUser(name, password, iconURL, email, birth_date, location, bio) {
+    try {
+      const newUser = new User({
+        name, 
+        password, 
+        iconURL, 
+        email, 
+        birth_date, 
+        location, 
+        bio
+      });
+
+      await newUser.save();
+      return newUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
 module.exports = {
     getOneUser,
+    createUser
+
 }

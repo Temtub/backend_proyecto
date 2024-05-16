@@ -2,8 +2,8 @@
 //-----------------------
 const chatRouter = require("express").Router()// Create the router
 
-const chatController = require('../controllers/usersController')
+const chatController = require('../controllers/chatsController')
 
-chatRouter.get('/', chatController.getChatFromUsers );
+chatRouter.get('/', chatController.getChatWithMessages );
 
 module.exports = chatRouter

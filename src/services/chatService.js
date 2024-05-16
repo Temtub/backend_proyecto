@@ -2,7 +2,7 @@
 // ----------------
 
 // Get the Chat Model to bring the data
-const Chat = require("./Chat");
+const Chat = require("../database/models/Chat");
 
 // Define una función para obtener los datos del chat y sus mensajes
 async function getChatWithMessages(chatId) {
@@ -24,5 +24,5 @@ async function getChatWithMessages(chatId) {
 }
 
 module.exports = {
-    getChatFromUsers,
+    getChatWithMessages,
 }

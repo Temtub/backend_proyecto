@@ -34,8 +34,19 @@ const getOneUser = async (req, res) => {
     }
 };
 
-
+async function createUser(req, res) {
+    console.log(req)
+    const { name, password, iconURL, email, birth_date, location, bio } = req.body;
+    try {
+      const user = await userService.createUser(name, password, iconURL, email, birth_date, location, bio);
+      res.status(201).json(user);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 // Export all the funcions
 module.exports = {
     getOneUser,
+    createUser
+
 }

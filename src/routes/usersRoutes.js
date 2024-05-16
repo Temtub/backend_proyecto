@@ -5,5 +5,6 @@ const userRouter = require("express").Router()// Create the router
 const usersController = require('../controllers/usersController')
 
 userRouter.get('/:userId', usersController.getOneUser );
+userRouter.post('/', usersController.createUser);
 
 module.exports = userRouter

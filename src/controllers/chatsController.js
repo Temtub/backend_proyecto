@@ -9,12 +9,15 @@ const chatService = require('../services/chatService')
  * @param {*} req The request object
  * @param {*} res The response object
  */
-const getChatFromUsers = async (req, res) => {
-    return
+const getChatWithMessages = async (req, res) => {
+
+
+    res.status(200).json()
 };
+
 
 
 // Export all the funcions
 module.exports = {
-    getChatFromUsers,
+    getChatWithMessages,
 }
