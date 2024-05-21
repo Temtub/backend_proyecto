@@ -35,7 +35,7 @@ const getOneUser = async (req, res) => {
 };
 
 async function createUser(req, res) {
-    console.log(req)
+    // console.log(req)
     const { name, password, iconURL, email, birth_date, location, bio } = req.body;
     try {
       const user = await userService.createUser(name, password, iconURL, email, birth_date, location, bio);
@@ -44,9 +44,19 @@ async function createUser(req, res) {
       res.status(500).json({ message: error.message });
     }
   }
+
+
+async function createNewChat (req, res){
+
+    const {user} = req.body
+    let newChat = await userService.createNewChat(user)
+    // console.log(newChat)
+    res.json(newChat)
+}
 // Export all the funcions
 module.exports = {
     getOneUser,
-    createUser
+    createUser,
+    createNewChat
 
 }

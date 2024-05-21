@@ -6,5 +6,5 @@ const usersController = require('../controllers/usersController')
 
 userRouter.get('/:userId', usersController.getOneUser );
 userRouter.post('/', usersController.createUser);
-
+userRouter.post("/newChat", usersController.createNewChat)
 module.exports = userRouter

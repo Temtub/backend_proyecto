@@ -23,6 +23,27 @@ async function getChatWithMessages(chatId) {
     }
 }
 
+/**
+ * Gets all chats from an array of ids 
+ * @param {*} ids Array of ids you want to search
+ * @returns All chatsl found
+ */
+const getVariousChats = async (ids) =>{
+    try {
+        // Search the chats form the id
+        const chats = await Chat.find({ _id: { $in: ids } });
+
+        // If theres no chat throws an error
+        if (!chats || chats.length === 0) {
+            return { error: "Chats not found" };
+        }
+        return chats;
+    } catch (error) {
+        console.error('Error fetching chats:', error);
+        throw error;
+    }
+}
 module.exports = {
     getChatWithMessages,
+    getVariousChats
 }

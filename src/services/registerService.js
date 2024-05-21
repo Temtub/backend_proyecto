@@ -1,35 +1,24 @@
 
 const User = require("../database/models/Users")
 
-async function register(username, password) {
+
+async function register(name, password, email) {
 
     try {
-        // Busca un usuario con el nombre de usuario proporcionado
-        const user = await User.findOne({ "name" : username });
+        const usuario = new User({
+          name: name,
+          password: password,
+          email: email,
+        });
+        await usuario.generatePassword(usuario.password)
 
-        
-        if (!user) {
-            // Si no se encuentra un usuario con el nombre de usuario proporcionado, devuelve false
-            return false;
-        }
-
-        // Comprueba si la contraseña proporcionada coincide con la contraseña almacenada en la base de datos
-        const isPasswordValid = await user.comparePassword(password);
-
-        console.log(isPasswordValid)
-
-        if (!isPasswordValid) {
-            // Si la contraseña no coincide, devuelve false
-            return false;
-        }
-
-        // Si el nombre de usuario y la contraseña coinciden, devuelve true
-        return true;
-    } catch (error) {
-        // Manejo de errores
-        console.error('Error al intentar iniciar sesión:', error);
-        return false;
-    }
+        await usuario.save();
+        console.log('Usuario insertado correctamente');
+        return true
+      } catch (error) {
+        console.error('Error al insertar usuario:', error);
+        return false
+      }
 }
 
 module.exports = {

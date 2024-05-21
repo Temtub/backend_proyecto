@@ -1,5 +1,8 @@
 
 const User = require("../database/models/Users")
+const jwt = require("jsonwebtoken")
+
+require('dotenv').config();
 
 async function login(username, password) {
 
@@ -7,7 +10,7 @@ async function login(username, password) {
         // Busca un usuario con el nombre de usuario proporcionado
         const user = await User.findOne({ "name" : username });
 
-        
+        // console.log(user)
         if (!user) {
             // Si no se encuentra un usuario con el nombre de usuario proporcionado, devuelve false
             return false;
@@ -16,15 +19,34 @@ async function login(username, password) {
         // Comprueba si la contraseña proporcionada coincide con la contraseña almacenada en la base de datos
         const isPasswordValid = await user.comparePassword(password);
 
-        console.log(isPasswordValid)
+        // console.log(isPasswordValid)
 
         if (!isPasswordValid) {
             // Si la contraseña no coincide, devuelve false
             return false;
         }
 
+        const secretKey = process.env.JWT_SECRET;
+        if (!secretKey) {
+            throw new Error('La clave secreta para JWT no está definida');
+        }
+        // console.log(username)
+
+        // Save the data that its not dangeros to send
+        let name = user.name
+        let email = user.email
+        let id = user._id
+        const data = {
+            name,
+            email,
+            id
+        }
+        const token = jwt.sign({data}, secretKey, {
+            expiresIn: "1m"
+        })
+
         // Si el nombre de usuario y la contraseña coinciden, devuelve true
-        return true;
+        return token;
     } catch (error) {
         // Manejo de errores
         console.error('Error al intentar iniciar sesión:', error);
