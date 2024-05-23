@@ -17,7 +17,7 @@ module.exports.login = async (req, res) =>{
     }
 
     else{
-        res.status(400).json({"status": false,  "msg": "User or pass incorrect"})
+        res.status(400).json({"status": false,  "msg": "Usuario o contraseña inválidos"})
     }
     
 }
