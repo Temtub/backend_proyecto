@@ -10,9 +10,24 @@ const chatService = require('../services/chatService')
  * @param {*} res The response object
  */
 const getChatWithMessages = async (req, res) => {
+    const { chatId } = req.params;
 
+    if (!chatId) {
+        return res.status(400).json({ status: false, msg: "Envia una id de chat" });
+    }
 
-    res.status(200).json()
+    try {
+        const response = await chatService.getChatWithMessages(chatId);
+
+        if (!response) {
+            return res.status(404).json({ status: false, msg: "No se ha encontrado chat o ha ocurrido un error" });
+        }
+
+        return res.status(200).json({ status: true, data: response });
+    } catch (error) {
+        console.error("Error fetching chat with messages:", error);
+        return res.status(500).json({ status: false, msg: "Error interno del servidor" });
+    }
 };
 
 
@@ -31,9 +46,25 @@ const getVariousChats = async (req, res) => {
     }
 };
 
+const setNewMessage = async (req, res) =>{
+
+    const { time, message, chatId, userId } = req.body
+
+    if(!time, !message, !chatId, !userId ){
+        res.status(400).json({status: false, msg: "Falta informacion"})
+    }
+    let response = chatService.setNewMessage(time, message, chatId, userId )
+    if(!response){
+        res.status(404).json({status: false, msg : "Chat no encontrado"})
+    }
+    else{
+        res.status(200).json(response)
+    }
+}
 
 // Export all the funcions
 module.exports = {
     getChatWithMessages,
-    getVariousChats
+    getVariousChats,
+    setNewMessage
 }

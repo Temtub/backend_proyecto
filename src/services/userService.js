@@ -4,26 +4,27 @@
 // Get the user Model to bring the data
 const User = require("../database/models/Users");
 const Chat = require("../database/models/Chat");
+const MAX_ATTEMPTS = 20
 
 /**
  * Function to get one user by id from the bd
  * @param {*} idUser The id of the user that wants to be found
  * @returns Object that has been found from the bd
  */
-const getOneUser = async (idUser) =>{
-    let userFound;
-    // Make the search of the user by the id
-    try {
-        userFound = await User.findOne({"_id" : idUser });
-    } catch (error) { // if it brings an error it catches it
-        console.error("Ha ocurrido un error en la función de getOneUser") 
-        console.log(error)
-        return false
-    }
-    //Transform the user that has been found into a json
-    let userFoundJson = userFound.toJSON() 
+const getOneUser = async (idUser) => {
+  let userFound;
+  // Make the search of the user by the id
+  try {
+    userFound = await User.findOne({ "_id": idUser });
+  } catch (error) { // if it brings an error it catches it
+    console.error("Ha ocurrido un error en la función de getOneUser")
+    console.log(error)
+    return false
+  }
+  //Transform the user that has been found into a json
+  let userFoundJson = userFound.toJSON()
 
-    return userFoundJson;
+  return userFoundJson;
 }
 
 /**
@@ -39,53 +40,112 @@ const getOneUser = async (idUser) =>{
  * @returns 
  */
 async function createUser(name, password, iconURL, email, birth_date, location, bio) {
-    try {
-      const newUser = new User({
-        name, 
-        password, 
-        iconURL, 
-        email, 
-        birth_date, 
-        location, 
-        bio
-      });
+  try {
+    const newUser = new User({
+      name,
+      password,
+      iconURL,
+      email,
+      birth_date,
+      location,
+      bio
+    });
 
-      await newUser.save();
-      return newUser;
-    } catch (error) {
-      throw error;
+    await newUser.save();
+    return newUser;
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Function to create a new chat
+ * @param {*} user 
+ * @param {*} attempt 
+ * @returns 
+ */
+const createNewChat = async (user, attempt = 0) => {
+  if (attempt >= MAX_ATTEMPTS) {
+    return { state: false, msg: "Vaya, parece que tienes todos los amigos posibles" };
+  }
+
+  try {
+    // Data to get a random user
+    const count = await User.countDocuments();
+    const randomIndex = Math.floor(Math.random() * count);
+    const randomUser = await User.findOne().skip(randomIndex);
+
+    // Check if the user exists
+    let userData = await userExists(user);
+    let nameOfUserAndChat = randomUser.name
+    
+    if (userData) {
+      let participants = [user, randomUser._id];
+      //Check if a user already exists
+      if (await chatExists(participants)) {
+        return createNewChat(user, attempt + 1); // Intenta crear un nuevo chat
+      }
+
+      // Create the chat in the bd
+      let newChat = await createChat(participants, nameOfUserAndChat);
+      await addChatToUser(participants, newChat._id);
+      return newChat;
+    } else {
+      return { state: false, msg: "Usuario buscado no existente" };
+    }
+  } catch (err) {
+    console.error(err);
+    return { state: false, msg: "Error seleccionando un nuevo usuario" };
+  }
+}
+
+
+/**
+ * Function to check if a chat already exists
+ * @param {Array} participants 
+ * @returns 
+ */
+async function chatExists(participants) {
+  try {
+    // Create the array into a Set
+    const participantSet = new Set(participants);
+
+    // Find all the chats that has the same number of participants
+    const potentialChats = await Chat.find({
+      participants: { $size: participantSet.size }
+    });
+
+    // Check that theres no chat with the same participants
+    for (const chat of potentialChats) {
+      const chatParticipantSet = new Set(chat.participants.map(id => id.toString()));
+      if (areSetsEqual(participantSet, chatParticipantSet)) {
+        return true;
+      }
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Error checking chat existence:', error);
+    throw error;
+  }
+}
+
+/**
+ * Function to check two datas
+ * @param {*} setA 
+ * @param {*} setB 
+ * @returns 
+ */
+function areSetsEqual(setA, setB) {
+  if (setA.size !== setB.size) {
+    return false;
+  }
+  for (let elem of setA) {
+    if (!setB.has(elem)) {
+      return false;
     }
   }
-
-
-const createNewChat = async (user) =>{
-  let randomUser;
-  // GET THE RANDOM USER
-  try {
-    // Get the number of users there are
-    const count = await User.countDocuments();
-    // PIck a random one
-    const randomIndex = Math.floor(Math.random() * count);
-    // Get the specific user by skipping to the user
-    randomUser = await User.findOne().skip(randomIndex);
-
-    // console.log(randomUser)
-  } catch (err) {
-      console.error(err);
-      return { state: false, msg: "Error seleccionando un nuevo usuario"};
-  }
-
-  if(userExists(user) ){
-    // console.log(user)
-    let participants = [user, randomUser._id]
-    // Create the chat in the bd
-    let newChat = await createChat(participants)
-    addChatToUser(participants, newChat._id)
-    return newChat
-  }
-  else{
-    return { state : false, msg: "Usuario no existente"}
-  }
+  return true;
 }
 
 /**
@@ -94,21 +154,24 @@ const createNewChat = async (user) =>{
  * @param {String} initialMessage First text of the user
  * @returns The chat json
  */
-const createChat = async (participants, initialMessage) => {
-  try {
-      const newChat = new Chat({
-          users: participants,
-          messages: initialMessage ? [{
-              sender: initialMessage.sender,
-              text: initialMessage.text
-          }] : []
-      });
+const createChat = async (participants, name, initialMessage) => {
 
-      const savedChat = await newChat.save();
-      return savedChat;
+
+  try {
+    const newChat = new Chat({
+      users: participants,
+      name: name,
+      messages: initialMessage ? [{
+        sender: initialMessage.sender,
+        text: initialMessage.text
+      }] : []
+    });
+
+    const savedChat = await newChat.save();
+    return savedChat;
   } catch (err) {
-      console.error('Error al crear el chat:', err);
-      throw err;
+    console.error('Error al crear el chat:', err);
+    return false
   }
 };
 
@@ -120,11 +183,12 @@ const createChat = async (participants, initialMessage) => {
  */
 const userExists = async (userId) => {
   try {
-      const user = await User.findById(userId);
-      return user !== null;
+    const user = await User.findById(userId);
+    
+    return user;
   } catch (err) {
-      console.error('Error al buscar el usuario:', err);
-      return false;
+    console.error('Error al buscar el usuario:', err);
+    return false;
   }
 };
 
@@ -156,8 +220,8 @@ async function addChatToUser(participants, chatId) {
 }
 
 module.exports = {
-    getOneUser,
-    createUser,
-    createNewChat
+  getOneUser,
+  createUser,
+  createNewChat
 
 }

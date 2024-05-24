@@ -5,5 +5,6 @@ const loginRouter = require("express").Router()// Create the router
 const loginController = require('../controllers/loginController')
 
 loginRouter.post('/', loginController.login );
+loginRouter.post('/token', loginController.unTokenizar );
 
 module.exports = loginRouter

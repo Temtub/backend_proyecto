@@ -54,6 +54,33 @@ async function login(username, password) {
     }
 }
 
+async function unTokenizar(token) {
+    const secret = process.env.JWT_SECRET;
+
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, secret, (err, decoded) => {
+            if (err) {
+                if (err.name === 'TokenExpiredError') {
+                    console.error('El token ha expirado');
+                    return false
+                } 
+                if (err.name === 'JsonWebTokenError') {
+                    console.error('El token es inválido');
+                    return false
+                } else {
+                    console.error(false);
+                    return err
+                }
+            } else {
+                // El token es válido y puedes usar los datos decodificados
+                // console.log('Datos del token:', decoded);
+                return {status:true, decoded};
+            }
+        });
+    });
+}
+
 module.exports = {
-    login
+    login,
+    unTokenizar
 }

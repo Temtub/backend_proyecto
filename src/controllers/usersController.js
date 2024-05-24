@@ -51,7 +51,11 @@ async function createNewChat (req, res){
     const {user} = req.body
     let newChat = await userService.createNewChat(user)
     // console.log(newChat)
-    res.json(newChat)
+    if(!newChat){
+        res.status(500).json({status:false, msg:"Ha ocurrido un error"})
+        return 
+    }
+    res.status(200).json(newChat)
 }
 // Export all the funcions
 module.exports = {
