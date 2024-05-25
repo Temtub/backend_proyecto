@@ -53,7 +53,8 @@ const setNewMessage = async (req, res) =>{
     if(!time, !message, !chatId, !userId ){
         res.status(400).json({status: false, msg: "Falta informacion"})
     }
-    let response = chatService.setNewMessage(time, message, chatId, userId )
+    let response = await chatService.setNewMessage(time, message, chatId, userId )
+    console.log(response)
     if(!response){
         res.status(404).json({status: false, msg : "Chat no encontrado"})
     }
