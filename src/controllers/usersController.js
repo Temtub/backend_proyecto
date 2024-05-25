@@ -50,7 +50,8 @@ async function createNewChat (req, res){
 
     const {user} = req.body
     let newChat = await userService.createNewChat(user)
-    // console.log(newChat)
+    console.log("Chat creado nuevo:")
+    console.log(newChat)
     if(!newChat){
         res.status(500).json({status:false, msg:"Ha ocurrido un error"})
         return 

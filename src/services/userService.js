@@ -4,7 +4,7 @@
 // Get the user Model to bring the data
 const User = require("../database/models/Users");
 const Chat = require("../database/models/Chat");
-const MAX_ATTEMPTS = 20
+const MAX_ATTEMPTS = 40
 
 /**
  * Function to get one user by id from the bd
@@ -60,11 +60,11 @@ async function createUser(name, password, iconURL, email, birth_date, location, 
 
 /**
  * Function to create a new chat
- * @param {*} user 
+ * @param {*} userId 
  * @param {*} attempt 
  * @returns 
  */
-const createNewChat = async (user, attempt = 0) => {
+const createNewChat = async (userId, attempt = 0) => {
   if (attempt >= MAX_ATTEMPTS) {
     return { state: false, msg: "Vaya, parece que tienes todos los amigos posibles" };
   }
@@ -76,14 +76,15 @@ const createNewChat = async (user, attempt = 0) => {
     const randomUser = await User.findOne().skip(randomIndex);
 
     // Check if the user exists
-    let userData = await userExists(user);
+    let userData = await userExists(userId);
     let nameOfUserAndChat = randomUser.name
-    
+
     if (userData) {
-      let participants = [user, randomUser._id];
+      let participants = [userData._id, randomUser._id];
+      // console.log(participants)
       //Check if a user already exists
-      if (await chatExists(participants)) {
-        return createNewChat(user, attempt + 1); // Intenta crear un nuevo chat
+      if (await chatExists(participants) || checkChatWithSamePerson(participants)) {
+        return createNewChat(userId, attempt + 1); // Intenta crear un nuevo chat
       }
 
       // Create the chat in the bd
@@ -99,25 +100,36 @@ const createNewChat = async (user, attempt = 0) => {
   }
 }
 
-
+/**
+ * Check if the chat that is creating is with the same person
+ * @param {*} participants 
+ * @returns 
+ */
+const checkChatWithSamePerson = (participants) =>{
+  if(participants.length == 2 && participants[0].toString() == participants[1].toString()){
+    return true
+  }
+  return false
+}
 /**
  * Function to check if a chat already exists
  * @param {Array} participants 
  * @returns 
  */
 async function chatExists(participants) {
-  try {
-    // Create the array into a Set
-    const participantSet = new Set(participants);
 
-    // Find all the chats that has the same number of participants
+  try {
+    // Crear un Set a partir del array de participantes
+    const participantSet = new Set(participants.map(id => id.toString()));
+    // Buscar todos los chats que tienen el mismo número de participantes
     const potentialChats = await Chat.find({
-      participants: { $size: participantSet.size }
+      users: { $size: participantSet.size }
     });
 
-    // Check that theres no chat with the same participants
+    // Verificar que no haya un chat con los mismos participantes
     for (const chat of potentialChats) {
-      const chatParticipantSet = new Set(chat.participants.map(id => id.toString()));
+      const chatParticipantSet = new Set(chat.users.map(id => id.toString()));
+
       if (areSetsEqual(participantSet, chatParticipantSet)) {
         return true;
       }
@@ -129,6 +141,7 @@ async function chatExists(participants) {
     throw error;
   }
 }
+
 
 /**
  * Function to check two datas
@@ -184,7 +197,6 @@ const createChat = async (participants, name, initialMessage) => {
 const userExists = async (userId) => {
   try {
     const user = await User.findById(userId);
-    
     return user;
   } catch (err) {
     console.error('Error al buscar el usuario:', err);
