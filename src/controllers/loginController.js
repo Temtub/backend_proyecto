@@ -25,7 +25,7 @@ module.exports.login = async (req, res) =>{
 module.exports.unTokenizar = async (req, res)=>{
     let { token } = req.body
     let response = await loginService.unTokenizar(token)
-    // console.log(response)
+    console.log(response)
     if(!response){
         res.status(400).json({status:false, msg: "Token invalido"})
     }

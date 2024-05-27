@@ -3,8 +3,9 @@
 
 // Get the Chat Model to bring the data
 const Chat = require("../database/models/Chat");
+const User = require("../database/models/Users");
 const Message = require("../database/models/Message")
-
+const mongoose = require("mongoose")
 /**
  * Obtain the a chat with its messages
 * @param {*} chatId 
@@ -76,8 +77,70 @@ const setNewMessage = async (time, message, chatId, userId) => {
         throw error;
     }
 };
+
+/**
+ * Function to get the 20 groups with more people in there
+ * @returns 
+ */
+const get20groups = async () => {
+    try {
+        const result = await Chat.aggregate([
+            { $unwind: "$users" },
+            { $group: { _id: "$_id", totalParticipants: { $sum: 1 }, chat: { $first: "$$ROOT" } } },
+            { $project: { "chat.users": 1, "chat.messages": 1, "chat.name": 1, totalParticipants: 1 } },
+            { $limit: 20 }
+        ]);
+
+        return result;
+
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
+const addUserToChat = async (userId, chatId) => {
+
+    // Start the session to create various transactions
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        // Add the id of the user to the chat
+        const chat = await Chat.findByIdAndUpdate(
+            chatId,
+            { $addToSet: { users: userId } },
+            { new: true, session } // Return the new document not the old one
+        );
+
+        // Add the id of the chat to the user
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { $addToSet: { chats: chatId } },
+            { new: true, session }
+        );
+
+        // Execute the transaction 
+        let transactionCommitted = await session.commitTransaction();
+
+        session.endSession();
+        console.log('User added to chat successfully');
+        return {chat, user}
+
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+
+        console.error('Error adding user to chat:', error);
+        return false
+    }
+}
+
+
 module.exports = {
     getChatWithMessages,
     getVariousChats,
-    setNewMessage
+    setNewMessage,
+    get20groups,
+    addUserToChat,
 }
