@@ -82,11 +82,13 @@ const setNewMessage = async (time, message, chatId, userId) => {
  * Function to get the 20 groups with more people in there
  * @returns 
  */
-const get20groups = async () => {
+const get20groups = async (userId) => {
     try {
         const result = await Chat.aggregate([
+            { $match: { users: { $ne: userId } } }, // Filtrar chats en los que el usuario no está presente
             { $unwind: "$users" },
             { $group: { _id: "$_id", totalParticipants: { $sum: 1 }, chat: { $first: "$$ROOT" } } },
+            { $match: { totalParticipants: { $gt: 2 } } }, // Filtrar chats con más de dos usuarios
             { $project: { "chat.users": 1, "chat.messages": 1, "chat.name": 1, totalParticipants: 1 } },
             { $limit: 20 }
         ]);

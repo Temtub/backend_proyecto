@@ -63,7 +63,15 @@ const setNewMessage = async (req, res) =>{
 }
 
 const get20groups = async (req, res) =>{
-    let response = await chatService.get20groups()
+
+    const { userId } = req.body
+
+    if(!userId){
+        res.status(400).json({status: false, msg: "No has enviado un id de usuario"})
+        return
+    }
+
+    let response = await chatService.get20groups(userId)
     if(!response){
         res.status(500).json({status:false, msg:"Algo salio mal..."})
     }else{
