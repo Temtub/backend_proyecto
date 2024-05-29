@@ -36,10 +36,12 @@ async function login(username, password) {
         let name = user.name
         let email = user.email
         let id = user._id
+        let friends = user.friends
         const data = {
             name,
             email,
-            id
+            id,
+            friends
         }
         const token = jwt.sign({data}, secretKey, {
             expiresIn: "1m"

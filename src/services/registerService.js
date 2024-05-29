@@ -14,7 +14,7 @@ async function register(name, password, email) {
 
         await usuario.save();
         console.log('Usuario insertado correctamente');
-        return true
+        return usuario
       } catch (error) {
         console.error('Error al insertar usuario:', error);
         return false

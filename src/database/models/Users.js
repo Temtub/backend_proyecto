@@ -11,9 +11,8 @@ const userSchema = new mongoose.Schema({
     iconURL: String, // URL of the user's icon
     email: {type: String, required:true}, // Email of the user
     friends: [{
-        name: String, // Friend's name
-        imageURL: String, // URL of the friend's image
-        bio: String // Friend's bio
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }], // Array of friends
     birth_date: Date, // User's birth date
     location: mongoose.Schema.Types.Mixed, // User's location
@@ -21,6 +20,9 @@ const userSchema = new mongoose.Schema({
     likes: [String], // The things that the user likes
     chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }] // Array of chat IDs
 });
+
+userSchema.path('friends').default([]);
+userSchema.path('likes').default([]);
 
 userSchema.methods.comparePassword = function(candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);

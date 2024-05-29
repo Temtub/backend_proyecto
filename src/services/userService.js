@@ -105,8 +105,8 @@ const createNewChat = async (userId, attempt = 0) => {
  * @param {*} participants 
  * @returns 
  */
-const checkChatWithSamePerson = (participants) =>{
-  if(participants.length == 2 && participants[0].toString() == participants[1].toString()){
+const checkChatWithSamePerson = (participants) => {
+  if (participants.length == 2 && participants[0].toString() == participants[1].toString()) {
     return true
   }
   return false
@@ -231,9 +231,31 @@ async function addChatToUser(participants, chatId) {
   }
 }
 
+const addFriendToUser = async (userId, friendId) => {
+  try {
+    // Search the user and add the friend 
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $push: { friends: friendId } },
+      { new: true, useFindAndModify: false }
+    );
+
+    if (!user) {
+      return 404
+    }
+
+    return user;
+  } catch (error) {
+    console.error('Error al agregar amigo:', error);
+    return false
+  }
+
+}
+
 module.exports = {
   getOneUser,
   createUser,
-  createNewChat
+  createNewChat,
+  addFriendToUser,
 
 }

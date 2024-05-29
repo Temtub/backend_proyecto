@@ -138,7 +138,6 @@ const addUserToChat = async (userId, chatId) => {
     }
 }
 
-
 module.exports = {
     getChatWithMessages,
     getVariousChats,

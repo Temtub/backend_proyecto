@@ -45,7 +45,12 @@ async function createUser(req, res) {
     }
   }
 
-
+/**
+ * Function to create a new chat
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 async function createNewChat (req, res){
 
     const {user} = req.body
@@ -58,10 +63,34 @@ async function createNewChat (req, res){
     }
     res.status(200).json(newChat)
 }
+
+
+const addFriendToUser = async (req, res) => {
+
+    const { userId, friendId } = req.body
+
+    if(!userId ||!friendId ){
+        res.status(400).json({status:false, msg: "Falta id de usuario o de amigo"})
+        return 
+    }
+    const response = await userService.addFriendToUser(userId, friendId)
+
+    if(!response){
+        res.status(500).json({status:false, msg:"Ha ocurrido un error interno"})
+        return
+    }
+    else if(response === 404){
+        res.status(404).json({status:false, msg:"Usuario no encontrado"})
+        return
+    }else{
+        res.status(200).json({status:true, response})
+    }
+}
 // Export all the funcions
 module.exports = {
     getOneUser,
     createUser,
-    createNewChat
+    createNewChat,
+    addFriendToUser,
 
 }
