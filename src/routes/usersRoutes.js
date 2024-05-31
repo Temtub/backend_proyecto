@@ -8,5 +8,6 @@ userRouter.get('/:userId', usersController.getOneUser );
 userRouter.post('/', usersController.createUser);
 userRouter.post("/newChat", usersController.createNewChat)
 userRouter.post("/addFriendToUser", usersController.addFriendToUser)
+userRouter.post("/addDataToUser", usersController.addDataToUser)
 
 module.exports = userRouter

@@ -5,19 +5,23 @@ const Message = require("./Message");
 
 // Define the schema for the chat
 const chatSchema = new mongoose.Schema({
-    users: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
-    }],
-    name: {
-      type: String,
-      required: true
-    },
-    messages: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Message'
-    }]
+  users: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }],
+  name: {
+    type: String,
+    required: true
+  },
+  messages: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Message'
+  }],
+  icon: {
+    type: String,  
+    required: false 
+  }
 });
 
 // Compile it

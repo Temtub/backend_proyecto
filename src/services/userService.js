@@ -252,10 +252,36 @@ const addFriendToUser = async (userId, friendId) => {
 
 }
 
+const addDataToUser = async (birth_date, location, biografia, likes, iconUrl, userId) => {
+
+  try {
+    // Encontrar el usuario por su ID y actualizar los datos
+    const usuarioActualizado = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          birth_date: birth_date,
+          location: location,
+          biografia: biografia,
+          likes: likes,
+          iconUrl: iconUrl
+        }
+      },
+      { new: true } 
+    );
+
+    console.log('Usuario actualizado:', usuarioActualizado);
+    return usuarioActualizado
+  } catch (error) {
+    console.error('Error actualizando el usuario:', error);
+    return false
+  }
+}
+
 module.exports = {
   getOneUser,
   createUser,
   createNewChat,
   addFriendToUser,
-
+  addDataToUser
 }
