@@ -44,7 +44,7 @@ async function login(username, password) {
             friends
         }
         const token = jwt.sign({data}, secretKey, {
-            expiresIn: "1m"
+            expiresIn: "60m"
         })
 
         // Si el nombre de usuario y la contraseña coinciden, devuelve true

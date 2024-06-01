@@ -85,10 +85,10 @@ const setNewMessage = async (time, message, chatId, userId) => {
 const get20groups = async (userId) => {
     try {
         const result = await Chat.aggregate([
-            { $match: { users: { $ne: userId } } }, // Filtrar chats en los que el usuario no está presente
+            { $match: { users: { $ne: userId } } }, 
             { $unwind: "$users" },
             { $group: { _id: "$_id", totalParticipants: { $sum: 1 }, chat: { $first: "$$ROOT" } } },
-            { $match: { totalParticipants: { $gt: 2 } } }, // Filtrar chats con más de dos usuarios
+            { $match: { totalParticipants: { $gt: 2 } } }, 
             { $project: { "chat.users": 1, "chat.messages": 1, "chat.name": 1, totalParticipants: 1 } },
             { $limit: 20 }
         ]);
@@ -138,10 +138,41 @@ const addUserToChat = async (userId, chatId) => {
     }
 }
 
+const createGroup = async (users, name, icon) =>{
+    console.log(users)
+    try {
+        //Create the chat
+        const chat = new Chat({
+          users,
+          name,
+          icon
+        });
+        await chat.save();
+
+        // Save the chat in the users
+        const userPromises = users.map(async (userId) => {
+            const user = await User.findById(userId);
+            if (user) {
+                user.chats = user.chats || [];
+                user.chats.push(chat._id);
+                await user.save();
+            }
+        });
+
+        await Promise.all(userPromises);
+
+        return chat;
+      } catch (error) {
+        console.error('Error creando el chat:', error);
+        return false
+      }
+}
+
 module.exports = {
     getChatWithMessages,
     getVariousChats,
     setNewMessage,
     get20groups,
     addUserToChat,
+    createGroup
 }

@@ -9,5 +9,6 @@ chatRouter.get('/getChat/:chatId', chatController.getChatWithMessages );
 chatRouter.post('/chats', chatController.getVariousChats );
 chatRouter.post('/newMessage', chatController.setNewMessage)
 chatRouter.post('/addUserToChat', chatController.addUserToChat)
+chatRouter.post('/createGroup', chatController.createGroup)
 
 module.exports = chatRouter

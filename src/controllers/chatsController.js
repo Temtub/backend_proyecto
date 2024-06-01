@@ -65,13 +65,15 @@ const setNewMessage = async (req, res) =>{
 const get20groups = async (req, res) =>{
 
     const { userId } = req.body
-
     if(!userId){
         res.status(400).json({status: false, msg: "No has enviado un id de usuario"})
         return
     }
 
     let response = await chatService.get20groups(userId)
+
+    // console.log(response)
+
     if(!response){
         res.status(500).json({status:false, msg:"Algo salio mal..."})
     }else{
@@ -102,6 +104,34 @@ const addUserToChat = async (req, res) =>{
         return res.status(500).json({ status: false, msg: "Error en el servidor" });
     }
 }
+
+const createGroup = async (req, res) =>{
+
+    const {users, name, icon } = req.body
+
+    if( !users ||!name || !icon ){
+        res.status(400).json({status:false, msg:"Envía todos los datos"})
+        return
+    }
+
+    if(users < 3){
+        res.status(400).json({status:false, msg:"Faltan usuarios"})
+        return
+    }
+
+    let response = await chatService.createGroup(users, name, icon)
+
+    console.log(response)
+    if(!response){
+        res.status(500).json({status:false, msg:"Error interno del servidor."})
+        return 
+    }
+    else{
+        res.status(200).json(response)
+    }
+    
+}
+
 // Export all the funcions
 module.exports = {
     getChatWithMessages,
@@ -109,4 +139,5 @@ module.exports = {
     setNewMessage,
     get20groups,
     addUserToChat,
+    createGroup
 }

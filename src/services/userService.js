@@ -22,9 +22,8 @@ const getOneUser = async (idUser) => {
     return false
   }
   //Transform the user that has been found into a json
-  let userFoundJson = userFound.toJSON()
 
-  return userFoundJson;
+  return userFound;
 }
 
 /**
