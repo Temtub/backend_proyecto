@@ -231,6 +231,11 @@ async function addChatToUser(participants, chatId) {
 }
 
 const addFriendToUser = async (userId, friendId) => {
+
+  if(await isFriend(userId, friendId) ) {
+    return 405
+  }
+
   try {
     // Search the user and add the friend 
     const user = await User.findByIdAndUpdate(
@@ -251,6 +256,21 @@ const addFriendToUser = async (userId, friendId) => {
 
 }
 
+const isFriend = async (userId, friendId) => {
+  try {
+    const user = await User.findById(userId);
+    console.log(user)
+    if (user && user.friends.includes(friendId)) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error('Error checking if user is friend:', error);
+    return false;
+  }
+}
+
 const addDataToUser = async (birth_date, location, biografia, likes, iconUrl, userId) => {
 
   try {
@@ -266,7 +286,7 @@ const addDataToUser = async (birth_date, location, biografia, likes, iconUrl, us
           iconUrl: iconUrl
         }
       },
-      { new: true } 
+      { new: true }
     );
 
     console.log('Usuario actualizado:', usuarioActualizado);

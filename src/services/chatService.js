@@ -83,16 +83,35 @@ const setNewMessage = async (time, message, chatId, userId) => {
  * @returns 
  */
 const get20groups = async (userId) => {
+    console.log(userId)
     try {
         const result = await Chat.aggregate([
-            { $match: { users: { $ne: userId } } }, 
-            { $unwind: "$users" },
-            { $group: { _id: "$_id", totalParticipants: { $sum: 1 }, chat: { $first: "$$ROOT" } } },
-            { $match: { totalParticipants: { $gt: 2 } } }, 
-            { $project: { "chat.users": 1, "chat.messages": 1, "chat.name": 1, totalParticipants: 1 } },
-            { $limit: 20 }
+            {
+                $group: {
+                    _id: "$_id",
+                    totalParticipants: { $sum: { $size: "$users" } }, // Contar el número de usuarios
+                    chat: { $first: "$$ROOT" }
+                }
+            },
+            {
+                $match: {
+                    totalParticipants: { $gt: 2 }
+                }
+            },
+            {
+                $project: {
+                    "chat.users": 1,
+                    "chat.messages": 1,
+                    "chat.name": 1,
+                    totalParticipants: 1
+                }
+            },
+            {
+                $limit: 20
+            }
         ]);
 
+        console.log(result)
         return result;
 
     } catch (error) {
@@ -127,7 +146,7 @@ const addUserToChat = async (userId, chatId) => {
 
         session.endSession();
         console.log('User added to chat successfully');
-        return {chat, user}
+        return { chat, user }
 
     } catch (error) {
         await session.abortTransaction();
@@ -138,14 +157,14 @@ const addUserToChat = async (userId, chatId) => {
     }
 }
 
-const createGroup = async (users, name, icon) =>{
+const createGroup = async (users, name, icon) => {
     console.log(users)
     try {
         //Create the chat
         const chat = new Chat({
-          users,
-          name,
-          icon
+            users,
+            name,
+            icon
         });
         await chat.save();
 
@@ -162,10 +181,10 @@ const createGroup = async (users, name, icon) =>{
         await Promise.all(userPromises);
 
         return chat;
-      } catch (error) {
+    } catch (error) {
         console.error('Error creando el chat:', error);
         return false
-      }
+    }
 }
 
 module.exports = {
