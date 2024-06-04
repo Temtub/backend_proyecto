@@ -103,9 +103,11 @@ const get20groups = async (userId) => {
                     "chat.users": 1,
                     "chat.messages": 1,
                     "chat.name": 1,
-                    totalParticipants: 1
+                    totalParticipants: 1,
+                    "chat.icon": 1
                 }
-            },
+            }
+            ,
             {
                 $limit: 20
             }
@@ -182,8 +184,13 @@ const createGroup = async (users, name, icon) => {
 
         return chat;
     } catch (error) {
-        console.error('Error creando el chat:', error);
-        return false
+        if (error.message.includes('BSONObj size')) {
+            console.error("ERROR POR TAMAÑO", error)
+            return 413
+        } else {
+            console.error("ERROR", error)
+            return false
+        }
     }
 }
 

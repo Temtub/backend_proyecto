@@ -13,7 +13,8 @@ const cors = require("cors")
 //Create the configuration for express, 
 app.use(express.json() )
 //Configure the app with the body parser
-app.use(bodyParser.urlencoded({ extended : true} ) )
+app.use(bodyParser.json({ limit: '100mb' }));
+app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 
 app.use(cors({}))
 

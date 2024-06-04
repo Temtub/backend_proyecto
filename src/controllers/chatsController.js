@@ -3,7 +3,7 @@
 
 // Declare the service that will bring the info for the user
 const chatService = require('../services/chatService')
-    
+
 /**
  * Function to retrieve the data of a chat from two users
  * @param {*} req The request object
@@ -45,28 +45,28 @@ const getVariousChats = async (req, res) => {
     }
 };
 
-const setNewMessage = async (req, res) =>{
+const setNewMessage = async (req, res) => {
 
     const { time, message, chatId, userId } = req.body
 
-    if(!time, !message, !chatId, !userId ){
-        res.status(400).json({status: false, msg: "Falta informacion"})
+    if (!time, !message, !chatId, !userId) {
+        res.status(400).json({ status: false, msg: "Falta informacion" })
     }
-    let response = await chatService.setNewMessage(time, message, chatId, userId )
+    let response = await chatService.setNewMessage(time, message, chatId, userId)
     console.log(response)
-    if(!response){
-        res.status(404).json({status: false, msg : "Chat no encontrado"})
+    if (!response) {
+        res.status(404).json({ status: false, msg: "Chat no encontrado" })
     }
-    else{
+    else {
         res.status(200).json(response)
     }
 }
 
-const get20groups = async (req, res) =>{
+const get20groups = async (req, res) => {
 
     const { userId } = req.body
-    if(!userId){
-        res.status(400).json({status: false, msg: "No has enviado un id de usuario"})
+    if (!userId) {
+        res.status(400).json({ status: false, msg: "No has enviado un id de usuario" })
         return
     }
 
@@ -74,14 +74,14 @@ const get20groups = async (req, res) =>{
 
     // console.log(response)
 
-    if(!response){
-        res.status(500).json({status:false, msg:"Algo salio mal..."})
-    }else{
-        res.status(200).json({status:true, data:response})
+    if (!response) {
+        res.status(500).json({ status: false, msg: "Algo salio mal..." })
+    } else {
+        res.status(200).json({ status: true, data: response })
     }
 }
 
-const addUserToChat = async (req, res) =>{
+const addUserToChat = async (req, res) => {
 
     const { userId, chatId } = req.body;
 
@@ -105,31 +105,34 @@ const addUserToChat = async (req, res) =>{
     }
 }
 
-const createGroup = async (req, res) =>{
+const createGroup = async (req, res) => {
 
-    const {users, name, icon } = req.body
+    const { users, name, icon } = req.body
 
-    if( !users ||!name || !icon ){
-        res.status(400).json({status:false, msg:"Envía todos los datos"})
+    if (!users || !name || !icon) {
+        res.status(400).json({ status: false, msg: "Envía todos los datos" })
         return
     }
 
-    if(users < 3){
-        res.status(400).json({status:false, msg:"Faltan usuarios"})
+    if (users < 3) {
+        res.status(400).json({ status: false, msg: "Faltan usuarios" })
         return
     }
 
     let response = await chatService.createGroup(users, name, icon)
 
-    console.log(response)
-    if(!response){
-        res.status(500).json({status:false, msg:"Error interno del servidor."})
-        return 
+    // console.log(response)
+    if (!response) {
+        res.status(500).json({ status: false, msg: "Error interno del servidor." })
+        return
     }
-    else{
+    else if (response == 413) {
+        res.status(413).json({ status: false, msg: "El documento es demasiado grande" })
+    }
+    else {
         res.status(200).json(response)
     }
-    
+
 }
 
 // Export all the funcions
