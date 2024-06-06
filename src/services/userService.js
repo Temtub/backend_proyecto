@@ -39,7 +39,15 @@ const getOneUser = async (idUser) => {
  * @returns 
  */
 async function createUser(name, password, iconURL, email, birth_date, location, bio) {
+
+
   try {
+    // Check if the user already exists
+    const existingUser = await User.findOne({ name });
+    if (existingUser) {
+      return 405
+    }
+
     const newUser = new User({
       name,
       password,
@@ -50,10 +58,25 @@ async function createUser(name, password, iconURL, email, birth_date, location, 
       bio
     });
 
+    // Create the chat in the bd
     await newUser.save();
-    return newUser;
+    console.log("REGISTRANDO USUARIO EN EJABERD... 🙏")
+    // Create the user in ejabberd
+    exec(`ejabberdctl register ${newUser._id} ip-172-31-18-153.eu-north-1.compute.internal ${newUser.password}`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error al registrar el usuario en ejabberd: ${error.message}`);
+        return false
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+        return false
+      }
+      console.log(`stdout: ${stdout}`);
+      return newUser;
+    });
   } catch (error) {
-    throw error;
+    console.error("ERROR en createUser; ", error)
+    return false
   }
 }
 
@@ -232,7 +255,7 @@ async function addChatToUser(participants, chatId) {
 
 const addFriendToUser = async (userId, friendId) => {
 
-  if(await isFriend(userId, friendId) ) {
+  if (await isFriend(userId, friendId)) {
     return 405
   }
 

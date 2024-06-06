@@ -5,11 +5,15 @@ const bcrypt = require('bcrypt');
 const Chat = require("../models/Chat")
 
 // Define the schema for users
-const userSchema = new mongoose.Schema({ 
-    name: {type: String, required:true}, // Name of the user
-    password: {type: String, required:true}, // Password of the user
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique:true
+    }, // Name of the user
+    password: { type: String, required: true }, // Password of the user
     iconURL: String, // URL of the user's icon
-    email: {type: String, required:true}, // Email of the user
+    email: { type: String, required: true }, // Email of the user
     friends: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
@@ -24,23 +28,23 @@ const userSchema = new mongoose.Schema({
 userSchema.path('friends').default([]);
 userSchema.path('likes').default([]);
 
-userSchema.methods.comparePassword = function(candidatePassword) {
+userSchema.methods.comparePassword = function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
-userSchema.methods.generatePassword = async function(candidatePassword) {
+userSchema.methods.generatePassword = async function (candidatePassword) {
     try {
         // Número de rondas de sal (cuanto mayor sea, más seguro pero más lento)
         const saltRounds = 10;
-        
+
         // Generar la sal
         const salt = await bcrypt.genSalt(saltRounds);
-        
+
         // Encriptar la contraseña
         const hashedPassword = await bcrypt.hash(candidatePassword, salt);
-        
+
         // Guardar la contraseña encriptada en el documento del usuario
         this.password = hashedPassword;
-        
+
         // Devolver la contraseña encriptada
         return hashedPassword;
     } catch (error) {

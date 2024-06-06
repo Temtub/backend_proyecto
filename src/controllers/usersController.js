@@ -39,7 +39,16 @@ async function createUser(req, res) {
     const { name, password, iconURL, email, birth_date, location, bio } = req.body;
     try {
         const user = await userService.createUser(name, password, iconURL, email, birth_date, location, bio);
-        res.status(201).json(user);
+        
+        if(!user){
+            console.error("Error registrando el usuario en ejabberd")
+            res.status(500).json({ status: false, message: 'Error registrando el usuario, algo ha funcionado mal.' });
+            return
+        }else if(user == 405){
+            res.status(405).json({ status: false, message: 'Ese nombre ya está en uso.' });
+            return
+        }
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
