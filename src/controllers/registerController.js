@@ -20,11 +20,14 @@ module.exports.register = async (req, res) =>{
     
     let registerCheck = await registerService.register(user, pass, email)
 
-    if( registerCheck ){
+    if(registerCheck == 403){
+        res.status(200).json({"status": false, msg:"Ese nombre ya existe, busque otro."})
+        return
+    } else if( registerCheck ){
+        
         res.status(200).json({"status": true, data:registerCheck})
-    }
-
-    else{
+        return
+    } else{
         res.status(500).json({"status": false,  "msg": "No se ha podido crear"})
     }
     

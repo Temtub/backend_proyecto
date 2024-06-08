@@ -13,7 +13,7 @@ module.exports.login = async (req, res) =>{
     let loginCheck = await loginService.login(user, pass)
     // console.log(loginCheck)
     if( loginCheck ){
-        res.status(200).json({status: true, token : loginCheck})
+        res.status(200).json({status: true, data : loginCheck})
     }
     else{
         res.status(400).json({"status": false,  "msg": "Usuario o contraseña inválidos"})

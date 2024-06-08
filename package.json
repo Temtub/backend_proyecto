@@ -10,7 +10,10 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.2",
     "nodemon": "^3.1.0",
-    "react-content-loader": "^7.0.0"
+    "react-content-loader": "^7.0.0",
+    "simple-xmpp": "^2.3.1",
+    "stanza": "^12.20.0",
+    "ws": "^8.17.0"
   },
   "name": "backend_proyecto",
   "version": "1.0.0",

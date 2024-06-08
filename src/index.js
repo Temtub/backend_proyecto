@@ -5,6 +5,7 @@ const express = require("express") //Import express
 const bodyParser = require("body-parser")// To pass the data 
 const router = require("./routes/appRoutes")// Create the router
 const PORT = process.env.PORT || 3001 //Port for the connection to the Api
+const WebSocket = require('ws');
 
 //----------------- CONFIGURATION OF THE EXPRESS APP ------------
 // Create an instance of express

@@ -48,7 +48,7 @@ async function login(username, password) {
         })
 
         // Si el nombre de usuario y la contraseña coinciden, devuelve true
-        return token;
+        return {token, password};
     } catch (error) {
         // Manejo de errores
         console.error('Error al intentar iniciar sesión:', error);
