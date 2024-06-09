@@ -16,14 +16,14 @@ const getOneUser = async (idUser) => {
   // Make the search of the user by the id
   try {
     userFound = await User.findOne({ "_id": idUser });
+    //Transform the user that has been found into a json
+    return userFound;
   } catch (error) { // if it brings an error it catches it
     console.error("Ha ocurrido un error en la función de getOneUser")
     console.log(error)
     return false
   }
-  //Transform the user that has been found into a json
 
-  return userFound;
 }
 
 /**

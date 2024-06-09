@@ -14,9 +14,8 @@ const cors = require("cors")
 //Create the configuration for express, 
 app.use(express.json() )
 //Configure the app with the body parser
-app.use(bodyParser.json({ limit: '100mb' }));
-app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
-
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 app.use(cors({}))
 
 //Create the route for the app

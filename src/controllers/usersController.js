@@ -79,20 +79,20 @@ const addFriendToUser = async (req, res) => {
     const { userId, friendId } = req.body
 
     if (!userId || !friendId) {
-        res.status(400).json({ status: false, msg: "Falta id de usuario o de amigo" })
+        res.status(400).json({ status: false, msg: "Falta id de usuario o de amigo." })
         return
     }
     const response = await userService.addFriendToUser(userId, friendId)
     console.log(response)
     if (!response) {
-        res.status(500).json({ status: false, msg: "Ha ocurrido un error interno" })
+        res.status(500).json({ status: false, msg: "Ha ocurrido un error interno." })
         return
     }
     else if (response === 404) {
-        res.status(404).json({ status: false, msg: "Usuario no encontrado" })
+        res.status(404).json({ status: false, msg: "Usuario no encontrado." })
         return
     }else if (response === 405){
-        res.status(404).json({ status: false, msg: "Los usuarios ya son amigos" })
+        res.status(405).json({ status: false, msg: "Ya eres amigo con ese usuario." })
     }
      else {
         res.status(200).json({ status: true, response })

@@ -106,7 +106,7 @@ const addUserToChat = async (req, res) => {
 }
 
 const createGroup = async (req, res) => {
-
+    console.log("aquiiiii")
     const { users, name, icon } = req.body
 
     if (!users || !name || !icon) {

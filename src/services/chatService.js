@@ -184,6 +184,7 @@ const createGroup = async (users, name, icon) => {
 
         return chat;
     } catch (error) {
+        console.log("aqui")
         if (error.message.includes('BSONObj size')) {
             console.error("ERROR POR TAMAÑO", error)
             return 413
